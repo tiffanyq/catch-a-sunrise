@@ -16,7 +16,6 @@ body {
 #main-text-content {
   z-index: 3;
   text-align: center;
-  font-size: 36px;
   color: #ffffff;
   min-width: 200px;
 }
@@ -24,6 +23,7 @@ body {
 #clock {
   background-color: #4c5d71;
   padding: 0.8em 2em;
+  font-size: 36px;
 }
 
 #info {
@@ -54,4 +54,18 @@ body {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   transition: all 0.5s;
+}
+
+/* meant for mobile */
+@media only screen and (max-width: 424px) {
+  #clock {
+    font-size: 20px;
+    padding: 0.4em 1em;
+  }
+
+  #info {
+    font-size: 16px;
+    padding: 0.2em 0.4em;
+    width: 252px;
+  }
 }
