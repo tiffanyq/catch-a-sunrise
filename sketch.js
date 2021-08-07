@@ -1,19 +1,20 @@
-const EMOJIS = ["💧","🦋","🐝","🍂","🍃","✨","🐦","🌸","☁️"];
+const EMOJIS = ["💧","🦋","🐝","🍂","🍃","✨","🐦","🌸","☁️", "🌾", "⭐"];
 const FRAME_RATE = 28;
 const SUNRISE_LENGTH = 90; // 5:00-6:30am
 const STEPS = FRAME_RATE * SUNRISE_LENGTH;
 const NUM_INTERVALS = 7;
 const MAX_OPACITY = 255;
-const MIN_EMOJI_SIZE = 24;
-const MAX_EMOJI_SIZE = 64;
+const MIN_EMOJI_SIZE = 20;
+const MAX_EMOJI_SIZE = 56;
 const MIN_NUM_EMOJIS = 1;
 const MAX_NUM_EMOJIS = 24;
-const MIN_FADE_RATE = 4;
-const MAX_FADE_RATE = 12;
-const MIN_DISTANCE_TRAVEL = 64;
-const MAX_DISTANCE_TRAVEL = 192;
-const MIN_CLICK_CLOUD_RADIUS = 0;
-const MAX_CLICK_CLOUD_RADIUS = 156;
+const MIN_FADE_RATE = 2;
+const MAX_FADE_RATE = 8;
+const MIN_DISTANCE_TRAVEL = 96;
+const MAX_DISTANCE_TRAVEL = 304;
+const MIN_CLICK_CLOUD_RADIUS = 36;
+const MAX_CLICK_CLOUD_RADIUS = 164;
+const Y_LERP_RATE = 0.008;
 
 let c1, c2;
 // colours of the sunrise at 15 minute intervals
@@ -44,12 +45,13 @@ class Emoji {
   }
 
   updateY() {
-    this.y = lerp(this.y, this.targetY, 0.008);
+    this.y = lerp(this.y, this.targetY, Y_LERP_RATE);
   }
 
   render() {
     const c = color(0);
     c.setAlpha(this.alpha);
+    noStroke();
     fill(c);
     textSize(this.size);
     text(this.character, this.x, this.y);
@@ -60,7 +62,7 @@ function setup() {
   const cnv = createCanvas(windowWidth, windowHeight);
   cnv.style('display', 'block');
   frameRate(FRAME_RATE);
-  colorMode(RGB);
+  colorMode(RGB, 255, 255, 255, 255);
   // 5:00am
   c1_1 = color(30, 46, 66);
   c2_1 = color(127, 131, 124);
@@ -106,11 +108,12 @@ function draw() {
     let curr = emojisOnScreen[i];
     if (curr.alpha === 0) {
       emojisOnScreen.splice(i, 1); // remove emoji after it fades
-      continue;
     }
-    curr.updateAlpha();
-    curr.updateY();
-    curr.render();
+    else {
+      curr.updateAlpha();
+      curr.updateY();
+      curr.render();
+    }
   } 
 }
 
@@ -123,6 +126,7 @@ function setBackgroundGradient() {
   for (let i = 0; i <= window.innerHeight; i++) {
     let inter = map(i, 0, window.innerHeight, 0, 1);
     let c = lerpColor(c1, c2, inter);
+    c.setAlpha(MAX_OPACITY);
     stroke(c);
     line(0, i, window.innerWidth, i);
   }
@@ -184,7 +188,19 @@ function resetSunrise() {
 }
 
 // Your part of the sunrise!
+function touchStarted() {
+  addEmojis();
+}
+
+function touchMoved() {
+  addEmojis();
+}
+
 function mouseClicked() {
+  addEmojis();
+}
+
+function mousePressed() {
   addEmojis();
 }
 
@@ -195,10 +211,15 @@ function mouseDragged() {
 function addEmojis() {
   const emojiCharacter = EMOJIS[round(random(0, EMOJIS.length))];
   const numEmojis = round(random(MIN_NUM_EMOJIS, MAX_NUM_EMOJIS));
+  const radius = round(random(MIN_CLICK_CLOUD_RADIUS, MAX_CLICK_CLOUD_RADIUS));
   for (let i = 0; i < numEmojis; i++) {
-    const x = mouseX + round(random(MIN_CLICK_CLOUD_RADIUS, MAX_CLICK_CLOUD_RADIUS));
-    const y = mouseY + round(random(MIN_CLICK_CLOUD_RADIUS, MAX_CLICK_CLOUD_RADIUS));
+    const x = mouseX + (setPositiveNegative() * round(random(0, radius)));
+    const y = mouseY + (setPositiveNegative() * round(random(0, radius)));
     const newEmoji =  new Emoji(emojiCharacter, x, y);
     emojisOnScreen.push(newEmoji);
   }
+}
+
+function setPositiveNegative() {
+  return random(0,1) < 0.5 ? -1 : 1
 }
