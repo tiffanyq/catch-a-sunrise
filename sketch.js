@@ -1,8 +1,19 @@
-const EMOJIS = [];
-const FRAME_RATE = 7;
+const EMOJIS = ["💧","🦋","🐝","🍂","🍃","✨","🐦","🌸","☁️"];
+const FRAME_RATE = 28;
 const SUNRISE_LENGTH = 90; // 5:00-6:30am
 const STEPS = FRAME_RATE * SUNRISE_LENGTH;
 const NUM_INTERVALS = 7;
+const MAX_OPACITY = 255;
+const MIN_EMOJI_SIZE = 24;
+const MAX_EMOJI_SIZE = 64;
+const MIN_NUM_EMOJIS = 1;
+const MAX_NUM_EMOJIS = 24;
+const MIN_FADE_RATE = 4;
+const MAX_FADE_RATE = 12;
+const MIN_DISTANCE_TRAVEL = 64;
+const MAX_DISTANCE_TRAVEL = 192;
+const MIN_CLICK_CLOUD_RADIUS = 0;
+const MAX_CLICK_CLOUD_RADIUS = 156;
 
 let c1, c2;
 // colours of the sunrise at 15 minute intervals
@@ -14,11 +25,42 @@ let pastTimeFrame = 0;
 let currFrame = 0;
 let isOverflowing = false;
 let sunriseEnded = false;
+let emojisOnScreen = [];
+
+class Emoji {
+ constructor(character, x, y) {
+    this.character = character;
+    this.x = x;
+    this.y = y;
+  // generate other emoji properties
+    this.targetY = y + round(random(MIN_DISTANCE_TRAVEL, MAX_DISTANCE_TRAVEL));
+    this.alpha = MAX_OPACITY;
+    this.size = round(random(MIN_EMOJI_SIZE, MAX_EMOJI_SIZE));
+    this.fadeRate = round(random(MIN_FADE_RATE, MAX_FADE_RATE));
+ }  
+
+  updateAlpha() {
+    this.alpha = max(this.alpha - this.fadeRate, 0);
+  }
+
+  updateY() {
+    this.y = lerp(this.y, this.targetY, 0.008);
+  }
+
+  render() {
+    const c = color(0);
+    c.setAlpha(this.alpha);
+    fill(c);
+    textSize(this.size);
+    text(this.character, this.x, this.y);
+  }
+}
 
 function setup() {
   const cnv = createCanvas(windowWidth, windowHeight);
   cnv.style('display', 'block');
   frameRate(FRAME_RATE);
+  colorMode(RGB);
   // 5:00am
   c1_1 = color(30, 46, 66);
   c2_1 = color(127, 131, 124);
@@ -58,12 +100,25 @@ function draw() {
       toggleReplayButton();
       sunriseEnded = true;
   }
+
+  // update the emojis
+  for (let i = emojisOnScreen.length - 1; i >= 0; i--) {
+    let curr = emojisOnScreen[i];
+    if (curr.alpha === 0) {
+      emojisOnScreen.splice(i, 1); // remove emoji after it fades
+      continue;
+    }
+    curr.updateAlpha();
+    curr.updateY();
+    curr.render();
+  } 
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+// My part of the sunrise!
 function setBackgroundGradient() {
   for (let i = 0; i <= window.innerHeight; i++) {
     let inter = map(i, 0, window.innerHeight, 0, 1);
@@ -126,4 +181,24 @@ function resetSunrise() {
   sunriseEnded = false;
   isOverflowing = false;
   toggleReplayButton();
+}
+
+// Your part of the sunrise!
+function mouseClicked() {
+  addEmojis();
+}
+
+function mouseDragged() {
+  addEmojis();
+}
+
+function addEmojis() {
+  const emojiCharacter = EMOJIS[round(random(0, EMOJIS.length))];
+  const numEmojis = round(random(MIN_NUM_EMOJIS, MAX_NUM_EMOJIS));
+  for (let i = 0; i < numEmojis; i++) {
+    const x = mouseX + round(random(MIN_CLICK_CLOUD_RADIUS, MAX_CLICK_CLOUD_RADIUS));
+    const y = mouseY + round(random(MIN_CLICK_CLOUD_RADIUS, MAX_CLICK_CLOUD_RADIUS));
+    const newEmoji =  new Emoji(emojiCharacter, x, y);
+    emojisOnScreen.push(newEmoji);
+  }
 }
