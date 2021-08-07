@@ -1,6 +1,6 @@
 const EMOJIS = ["💧","🦋","🐝","🍂","🍃","✨","🐦","🌸","☁️", "🌾", "⭐"];
 const FRAME_RATE = 28;
-const SUNRISE_LENGTH = 90; // 5:00-6:30am
+const SUNRISE_LENGTH = 30; // 5:00-6:30am
 const STEPS = FRAME_RATE * SUNRISE_LENGTH;
 const NUM_INTERVALS = 7;
 const MAX_OPACITY = 255;
