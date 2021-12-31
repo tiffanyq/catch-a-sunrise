@@ -10,37 +10,38 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: Inconsolata, monospace;
+  font-family: 'Cardo', serif;
 }
 
 #main-text-content {
   z-index: 3;
   text-align: center;
   color: #ffffff;
-  min-width: 200px;
+  min-width: 500px;
 }
 
 #clock {
-  background-color: #4c5d71;
   padding: 0.8em 2em;
-  font-size: 36px;
+  margin-top: -32px;
+  color: #090030;
+  font-size: 54px;
 }
 
 #info {
   position: relative;
   top: 0;
-  font-size: 20px;
-  background-color: #ece5da;
+  font-size: 24px;
   color: #090030;
   padding: 0.4em 0.8em;
+  font-style: italic;
+  text-align:center;
 }
 
 #replay {
   visibility: hidden;
-  font-family: Inconsolata, monospace;
-  text-transform: uppercase;
+  font-family: 'Cardo', serif;
   font-size: 20px;
-  padding: 0.8em 1.6em;
+  padding: 0.8em 2em;
   background-color: #090030;
   border: 1px solid #ffffff;
   color: #ffffff;
@@ -56,16 +57,27 @@ body {
   transition: all 0.5s;
 }
 
+#credit, #credit a {
+  color: #090030;
+  font-size: 16px;
+  margin-top: 36px;
+  font-style: italic;
+}
+
 /* meant for mobile */
 @media only screen and (max-width: 424px) {
   #clock {
-    font-size: 20px;
+    font-size: 36px;
     padding: 0.4em 1em;
+    margin-top: 12px;
   }
 
   #info {
     font-size: 16px;
     padding: 0.2em 0.4em;
-    width: 252px;
+  }
+
+  #credit, #credit a {
+    font-size: 14px;
   }
 }
