@@ -23,7 +23,7 @@ body {
 #clock {
   padding: 0.8em 2em;
   margin-top: -32px;
-  color: #090030;
+  color: #ffffff;
   font-size: 54px;
 }
 
@@ -31,7 +31,7 @@ body {
   position: relative;
   top: 0;
   font-size: 24px;
-  color: #090030;
+  color: #ffffff;
   padding: 0.4em 0.8em;
   font-style: italic;
   text-align:center;
@@ -45,7 +45,7 @@ body {
   background-color: #090030;
   border: 1px solid #ffffff;
   color: #ffffff;
-  border-radius: 50px;
+  border-radius: 0;
 }
 
 #replay:hover {
@@ -58,7 +58,7 @@ body {
 }
 
 #credit, #credit a {
-  color: #090030;
+  color: #ffffff;
   font-size: 16px;
   margin-top: 36px;
   font-style: italic;

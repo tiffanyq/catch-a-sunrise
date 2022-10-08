@@ -1,8 +1,8 @@
 const EMOJIS = ["💧","🦋","🐝","🍂","🍃","✨","🐦","🌸","☁️", "🌾", "⭐"];
 const FRAME_RATE = 28;
-const SUNRISE_LENGTH = 16; // 5:00-6:30am
-const STEPS = FRAME_RATE * SUNRISE_LENGTH;
-const NUM_INTERVALS = 7;
+const SUNSET_LENGTH = 24;
+const STEPS = FRAME_RATE * SUNSET_LENGTH;
+const NUM_INTERVALS = 12;
 const MAX_OPACITY = 255;
 const MIN_EMOJI_SIZE = 20;
 const MAX_EMOJI_SIZE = 56;
@@ -16,16 +16,46 @@ const MIN_CLICK_CLOUD_RADIUS = 36;
 const MAX_CLICK_CLOUD_RADIUS = 164;
 const Y_LERP_RATE = 0.008;
 
+const DATES = [
+  "Sep 9th, 2022",
+  "Aug 28th, 2022",
+  "Sep 22nd, 2022",
+  "Aug 28th, 2022",
+  "Nov 25th, 2021",
+  "Sep 1st, 2022",
+  "Nov 21st, 2021",
+  "Nov 20th, 2021",
+  "June 28th, 2022",
+  "Sep 1st, 2022",
+  "Apr 30th, 2022",
+  "Jul 14th, 2020",
+];
+
+const TIMES = [
+  "5:57 pm",
+  "7:56 pm",
+  "6:33 pm",
+  "6:58 pm",
+  "4:44 pm",
+  "7:51 pm",
+  "5:23 pm",
+  "4:55 pm",
+  "6:25 pm",
+  "8:36 pm",
+  "8:28 pm",
+  "11:47 pm"
+];
+
 let c1, c2;
-// colours of the sunrise at 15 minute intervals
-let c1_1, c1_2, c1_3, c1_4, c1_5, c1_6, c1_7;
-let c2_1, c2_2, c2_3, c2_4, c2_5, c2_6, c2_7;
+// colours of the sunset
+let c1_1, c1_2, c1_3, c1_4, c1_5, c1_6, c1_7, c1_8, c1_9, c1_10, c1_11, c1_12;
+let c2_1, c2_2, c2_3, c2_4, c2_5, c2_6, c2_7, c2_8, c2_9, c2_10, c2_11, c2_12;
 let c1Array;
 let c2Array;
 let pastTimeFrame = 0;
 let currFrame = 0;
 let isOverflowing = false;
-let sunriseEnded = false;
+let sunsetEnded = false;
 let emojisOnScreen = [];
 
 class Emoji {
@@ -63,32 +93,46 @@ function setup() {
   cnv.style('display', 'block');
   frameRate(FRAME_RATE);
   colorMode(RGB, 255, 255, 255, 255);
-  // 5:00am
-  c1_1 = color(30, 46, 66);
-  c2_1 = color(127, 131, 124);
-  // 5:15am
-  c1_2 = color(45, 65, 90);
-  c2_2 = color(147, 158, 158);
-  // 5:30am
-  c1_3 = color(119, 138, 168);
-  c2_3 = color(183, 174, 159);
-  // 5:45am
-  c1_4 = color(174, 188, 214);
-  c2_4 = color(224, 193, 173);
-  // 6:00am
-  c1_5 = color(146, 170, 218);
-  c2_5 = color(238, 206, 167);
-  // 6:15am
-  c1_6 = color(190,207,235);
-  c2_6 = color(244,224,187);
-  // 6:30am
-  c1_7 = color(201,225,250);
-  c2_7 = color(244,237,225);
+  // 9/9/2022
+  c1_1 = color(171,198,222);
+  c2_1 = color(254,250,234);
+  // 8/28/2022
+  c1_2 = color(151, 187, 240);
+  c2_2 = color(235, 221, 207);
+  // 9/22/2022
+  c1_3 = color(63, 114, 179);
+  c2_3 = color(242, 233, 201);
+  // 8/28/2022
+  c1_4 = color(43,114,197);
+  c2_4 = color(238,232,184);
+  // 11/25/2022
+  c1_5 = color(112,139,185);
+  c2_5 = color(226,189,155);
+  // 9/1/2022
+  c1_6 = color(69,105,146);
+  c2_6 = color(255,147,123);
+  // 11/21/2021
+  c1_7 = color(69,105,146);
+  c2_7 = color(252,141,72);
+  // 11/20/2021
+  c1_8 = color(145,155,159);
+  c2_8 = color(252,85,55);
+  // 6/28/2022
+  c1_9 = color(62,82,162);
+  c2_9 = color(243,174,131);
+  // 9/1/2022
+  c1_10 = color(20,22,84);
+  c2_10 = color(204,115,124);
+  // 4/30/2022
+  c1_11 = color(2,37,114);
+  c2_11 = color(42,81,130);
+  // 7/14/2020
+  c1_12 = color(0,0,0);
+  c2_12 = color(55,55,68);
+  c1Array = [c1_1, c1_2, c1_3, c1_4, c1_5, c1_6, c1_7, c1_8, c1_9, c1_10, c1_11, c1_12];
+  c2Array = [c2_1, c2_2, c2_3, c2_4, c2_5, c2_6, c2_7, c2_8, c2_9, c2_10, c2_11, c2_12];
 
-  c1Array = [c1_1, c1_2, c1_3, c1_4, c1_5, c1_6, c1_7];
-  c2Array = [c2_1, c2_2, c2_3, c2_4, c2_5, c2_6, c2_7];
-
-  // Initialize sunrise at 5am
+  // Initialize sunset at first photo
   c1 = c1_1;
   c2 = c2_1;
 }
@@ -96,11 +140,13 @@ function setup() {
 function draw() {
   setBackgroundGradient();
   if (currFrame < STEPS) {
-    updateBackgroundGradientColours();
-    updateTime();
-  } else if (!sunriseEnded) {
+    const photo = updateBackgroundGradientColours();
+    updateTime(photo);
+    updateDate(photo);
+    updatePhotoCount(photo);
+  } else if (!sunsetEnded) {
       toggleReplayButton();
-      sunriseEnded = true;
+      sunsetEnded = true;
   }
 
   // update the emojis
@@ -121,7 +167,6 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// My part of the sunrise!
 function setBackgroundGradient() {
   for (let i = 0; i <= window.innerHeight; i++) {
     let inter = map(i, 0, window.innerHeight, 0, 1);
@@ -156,38 +201,36 @@ function updateBackgroundGradientColours() {
   let ref_c2_end = c2Array[min(NUM_INTERVALS -1, ceil(interColorSelection))];
   c1 = lerpColor(ref_c1_start, ref_c1_end, inter);
   c2 = lerpColor(ref_c2_start, ref_c2_end, inter);
+
+  return ceil(interColorSelection)-1;
 }
 
 function timeFrameChanged(interColorSelection) {
   return interColorSelection !== pastTimeFrame;
 }
 
-function updateTime() {
-  let time = document.getElementById("time");
-  let hour = setHour();
-  let minute = setMinute();
-  time.innerText = hour + ":" + minute;
+function updateTime(photo) {
+  const time = document.getElementById("time");
+  time.innerText = TIMES[photo];
 }
 
-function setHour() {
-  let ref = map(currFrame, 0, STEPS, 0, 3);
-  return ref < 2 ? "5" : "6";
+function updateDate(photo) {
+  const date = document.getElementById("date");
+  date.innerText = DATES[photo];
 }
 
-function setMinute() {
-  let ref = map(currFrame, 0, STEPS, 0, 90);
-  let tempMin = floor(ref) % 60;
-  return tempMin < 10 ? "0" + tempMin.toString() : tempMin.toString();
+function updatePhotoCount(photo) {
+  const photoCount = document.getElementById("photo-count");
+  photoCount.innerText = photo + 1;
 }
 
-function resetSunrise() {
+function resetSunset() {
   currFrame = 0;
-  sunriseEnded = false;
+  sunsetEnded = false;
   isOverflowing = false;
   toggleReplayButton();
 }
 
-// Your part of the sunrise!
 function touchStarted() {
   addEmojis();
 }
