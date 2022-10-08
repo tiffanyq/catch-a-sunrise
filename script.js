@@ -9,5 +9,5 @@ function toggleReplayButton() {
 
 window.onload = function() {
   const replayButton = document.getElementById("replay");
-  replayButton.addEventListener("click", resetSunset);
+  replayButton.addEventListener("click", resetSunrise);
 }
