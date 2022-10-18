@@ -3,9 +3,13 @@ canvas {
   left: 0;
   top: 0;
 }
-
+html, body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
 body {
   height: 100vh;
+  position: relative;
   margin: 0;
   display: flex;
   justify-content: center;
